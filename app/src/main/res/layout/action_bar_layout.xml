@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@color/colorPrimary"
+    android:orientation="horizontal">
+
+
+    <LinearLayout
+        android:id="@+id/llActionPublicationBack"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="48dp"
+        android:background="@drawable/selector_transparent_white_transparent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="asdasdaasdf fsd"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/ivLoadFromDevice"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingBottom="11dp"
+            android:paddingLeft="11dp"
+            android:paddingRight="16dp"
+            android:paddingTop="11dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/chooser" />
+
+        <ImageView
+            android:id="@+id/ivLoadFromInternet"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingBottom="11dp"
+            android:paddingLeft="11dp"
+            android:paddingRight="16dp"
+            android:paddingTop="11dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/loadinternet" />
+
+        <ImageView
+            android:id="@+id/ivSettings"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:paddingBottom="11dp"
+            android:paddingLeft="11dp"
+            android:paddingRight="16dp"
+            android:paddingTop="11dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/settings" />
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>
