@@ -19,6 +19,15 @@
 
     </ViewFlipper>
 
+    <ProgressBar
+        android:id="@+id/pbLoadImages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:background="@android:color/darker_gray"
+        />
+
 
 
 </RelativeLayout>

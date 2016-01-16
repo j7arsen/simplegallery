@@ -19,12 +19,14 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.j7arsen.simple.gallery.R;
 import com.j7arsen.simple.gallery.directorychoose.DirectoryChooserDialog;
+import com.j7arsen.simple.gallery.swipe.SwipeDetector;
 import com.j7arsen.simple.gallery.utils.AppConstants;
 import com.j7arsen.simple.gallery.utils.AppSettings;
 import com.j7arsen.simple.gallery.utils.Utils;
@@ -40,22 +42,22 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity implements View.OnClickListener, View.OnTouchListener {
 
-    private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-
     private TextView mTvTitle;
     private ImageView mIvLoadFromDevice;
     private ImageView mIvLoadFromInternet;
     private ImageView mIvSettings;
 
     private ViewFlipper mViewFlipper;
+    private ProgressBar mPbLoadImages;
     private ArrayList<String> mImagesPaths;
 
     private String mChoosenDir = "";
 
     private ArrayList<Bitmap> mBitmapList;
 
-    private GestureDetector mDetector = new GestureDetector(new SwipeDetector());
+    private ProgressDialog simpleWaitDialog;
+
+    private GestureDetector mDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     private void initUI() {
         mViewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper);
+        mPbLoadImages = (ProgressBar) findViewById(R.id.pbLoadImages);
     }
 
     private void setListeners() {
@@ -83,6 +86,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     }
 
     private void initData() {
+        mDetector = new GestureDetector(MainActivity.this, new SwipeDetector(MainActivity.this, mViewFlipper));
         Utils utils = new Utils(this);
         if (mImagesPaths == null) {
             mImagesPaths = new ArrayList<>();
@@ -96,7 +100,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             mViewFlipper.stopFlipping();
             mViewFlipper.removeAllViews();
         }
-        if (mImagesPaths != null && !mImagesPaths.isEmpty()) {
+        if(mImagesPaths != null && !mImagesPaths.isEmpty()){
             for (int i = 0; i < mImagesPaths.size(); i++) {
                 ImageView imageView = new ImageView(this);
                 Drawable image = Drawable.createFromPath(mImagesPaths.get(i));
@@ -157,16 +161,6 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     }
 
-    AnimationListener mAnimationListener = new Animation.AnimationListener() {
-        public void onAnimationStart(Animation animation) {
-        }
-
-        public void onAnimationRepeat(Animation animation) {
-        }
-
-        public void onAnimationEnd(Animation animation) {
-        }
-    };
 
     private void setActionBarTitle() {
         setTitle(getResources().getString(R.string.app_name));
@@ -241,33 +235,6 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         return true;
     }
 
-    class SwipeDetector extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            try {
-                if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.left_in));
-                    mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.left_out));
-                    mViewFlipper.getInAnimation().setAnimationListener(mAnimationListener);
-                    mViewFlipper.showNext();
-                    return true;
-                } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.right_in));
-                    mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.right_out));
-                    mViewFlipper.getInAnimation().setAnimationListener(mAnimationListener);
-                    mViewFlipper.showPrevious();
-                    return true;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
-    }
-
-
     private void setPathImage(final ImageView imageView, final String path) {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -288,9 +255,15 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         }
 
         @Override
-        protected void onPostExecute(Bitmap result) {
-            addDownloadedImages(result);
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mPbLoadImages.setVisibility(View.VISIBLE);
+        }
 
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            mPbLoadImages.setVisibility(View.GONE);
+            addDownloadedImages(result);
         }
 
         private Bitmap downloadBitmap(String url) {
